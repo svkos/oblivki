@@ -1,0 +1,48 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+
+/**
+ * This is the model class for table "offer".
+ *
+ * @property int $idoffer
+ * @property string $name
+ */
+class Offer extends \yii\db\ActiveRecord
+{
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'offer';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['name'], 'required'],
+            [['name'], 'string', 'max' => 40],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id_offer' => 'Idoffer',
+            'name' => 'Name',
+        ];
+    }
+	
+	public static function getAll(){
+		return self::find()->all();
+	}
+}
