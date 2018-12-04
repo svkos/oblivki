@@ -8,10 +8,11 @@ use Yii;
  * This is the model class for table "texts".
  *
  * @property int $id_text
+ * @property int $id_offer
  * @property string $text
  * @property int $rating
  *
- * @property Teaser $teaser
+ * @property Teaser[] $teasers
  */
 class Texts extends \yii\db\ActiveRecord
 {
@@ -29,10 +30,10 @@ class Texts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['text'], 'required'],
-            [['rating'], 'integer'],
+            [['id_offer', 'text'], 'required'],
+			['id_offer', 'unique', 'targetAttribute' => ['id_offer', 'text']],
+            [['id_offer'], 'integer'],
             [['text'], 'string', 'max' => 100],
-            [['text'], 'unique'],
         ];
     }
 
@@ -43,6 +44,7 @@ class Texts extends \yii\db\ActiveRecord
     {
         return [
             'id_text' => 'Id Text',
+            'id_offer' => 'Id Offer',
             'text' => 'Text',
             'rating' => 'Rating',
         ];
@@ -51,9 +53,8 @@ class Texts extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTeaser()
+    public function getTeasers()
     {
-        return $this->hasOne(Teaser::className(), ['id_text' => 'id_text']);
+        return $this->hasMany(Teaser::className(), ['id_text' => 'id_text']);
     }
-	
 }

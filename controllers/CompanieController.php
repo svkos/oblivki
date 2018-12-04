@@ -49,11 +49,13 @@ class CompanieController extends Controller
 	
 	public function actionIndex($id)
     {
-		
-		$model = Companie::find()->where(['id_offer'=>$id])->all();
+		$dataProvider = new ActiveDataProvider([
+            'query' => Companie::find()->where(['id_offer'=>$id]),
+        ]);
+		//$model = Companie::find()->where(['id_offer'=>$id])->all();
 		
         return $this->render('index', [
-            'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

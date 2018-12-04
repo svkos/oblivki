@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -15,9 +16,26 @@ $this->params['breadcrumbs'][] = $this->title;
 	<p>
 		<?= Html::a('Редактировать компании', ['offer/companie/edit'], [ 'class'=> 'btn btn-success']) ?>
 	</p>	
-	<?php foreach($model as $item): ?>
-		<?= Html::a($item->name, ['teaser', 'id' => $item->id_companie]) ?>
-		<br>
-	<?php endforeach; ?>
+	
+	 <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            'id_api',
+			[
+				'attribute'=>'name',
+				'label'=>'Имя',
+				'content'=>function($data){
+					return Html::a($data['name'], ['offer/companie/teaser?id='.$data['id_companie']]);
+				}
+			],
+			
+			[
+				'class' => 'yii\grid\ActionColumn',
+				'header'=>'Действия', 
+				'headerOptions' => ['width' => '80'],
+				'template' => '{delete}',
+			],
+        ],
+    ]); ?>
    
 </div>

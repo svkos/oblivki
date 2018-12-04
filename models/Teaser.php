@@ -3,22 +3,25 @@
 namespace app\models;
 
 use Yii;
-use app\models\oblivki\TeaserApi;
+use app\models\api\TeaserApi;
 use yii\helpers\Url;
+
 /**
  * This is the model class for table "teaser".
  *
  * @property int $idteaser
+ * @property int $api_idteaser
  * @property int $idcompanie
- * @property string $name_companie
- * @property string $date
  * @property int $id_text
  * @property int $id_image
+ * @property string $rating
+ * @property int $views
+ * @property int $clicks
+ * @property string $ctr
  * @property string $price_pc
  * @property string $price_mob
  * @property string $price_tab
- * @property string $rating
- * @property int $api_idteaser
+ * @property string $date
  *
  * @property Images $image
  * @property Texts $text
@@ -26,8 +29,8 @@ use yii\helpers\Url;
 class Teaser extends \yii\db\ActiveRecord
 {
 	public $count;
-	public $idcompanie;
-	public $url;
+	//public $idcompanie;
+	public $id_offer;
 	
     /**
      * @inheritdoc
@@ -43,14 +46,11 @@ class Teaser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idcompanie', 'name_companie', 'date', 'id_text', 'id_image', 'price_pc', 'price_mob', 'price_tab'], 'required'],
-            [['idcompanie', 'id_text', 'id_image', 'api_idteaser', 'count'], 'integer'],
+            [['api_idteaser', 'idcompanie', 'count', 'id_offer', 'id_text', 'id_image', 'views', 'clicks'], 'integer'],
+            [['idcompanie', 'id_text', 'id_image', 'price_pc', 'price_mob', 'price_tab', 'date'], 'required'],
+            [['rating', 'ctr', 'price_pc', 'price_mob', 'price_tab'], 'number'],
             [['date'], 'safe'],
-			[['url'], 'safe'],
-            [['price_pc', 'price_mob', 'price_tab', 'rating'], 'number'],
-            [['name_companie'], 'string', 'max' => 80],
-            [['id_text'], 'unique'],
-            [['id_image'], 'unique'],
+            [['api_idteaser'], 'unique'],
             [['id_image'], 'exist', 'skipOnError' => true, 'targetClass' => Images::className(), 'targetAttribute' => ['id_image' => 'id_image']],
             [['id_text'], 'exist', 'skipOnError' => true, 'targetClass' => Texts::className(), 'targetAttribute' => ['id_text' => 'id_text']],
         ];
@@ -63,16 +63,18 @@ class Teaser extends \yii\db\ActiveRecord
     {
         return [
             'idteaser' => 'Idteaser',
+            'api_idteaser' => 'Api Idteaser',
             'idcompanie' => 'Idcompanie',
-            'name_companie' => 'Name Companie',
-            'date' => 'Date',
             'id_text' => 'Id Text',
             'id_image' => 'Id Image',
+            'rating' => 'Rating',
+            'views' => 'Views',
+            'clicks' => 'Clicks',
+            'ctr' => 'Ctr',
             'price_pc' => 'Price Pc',
             'price_mob' => 'Price Mob',
             'price_tab' => 'Price Tab',
-            'rating' => 'Rating',
-            'api_idteaser' => 'Api Idteaser',
+            'date' => 'Date',
         ];
     }
 
@@ -94,11 +96,15 @@ class Teaser extends \yii\db\ActiveRecord
 	
 	public function createTeasers(){
         while($this->count != 0){
-			$text = Texts::find()->all();
+			$text = Texts::find()->where(['id_offer' => $this->id_offer])->all();
 			$randomText = rand(0,count($text));
 			
-			$image = Images::find()->all();
+			$image = Images::find()->where(['id_offer' => $this->id_offer])->all();
 			$randomImage = rand(0,count($image));
+			
+			if(!(count($text) && count($image))){
+				echo 'null';die;
+			}
 			
 			
 			//validate
@@ -113,12 +119,10 @@ class Teaser extends \yii\db\ActiveRecord
 			$api->tabletCommonPrice = 0.5;
 			
 			$response = $api->create();
-			echo '<pre>';
+			//echo '<pre>';
 			if($response['message'] == 'success'){
-				
 				$teaser = new self();
 				$teaser->idcompanie = $this->idcompanie;
-				$teaser->name_companie = 'name';
 				$teaser->date = date('Y-m-d H:i:s');
 				$teaser->id_text = $text[$randomText]->id_text;
 				$teaser->id_image = $image[$randomImage]->id_image;
@@ -126,9 +130,7 @@ class Teaser extends \yii\db\ActiveRecord
 				$teaser->price_mob = 0.5;
 				$teaser->price_tab = 0.5;
 				$teaser->api_idteaser = (int)$response['id'];
-				$teaser->save(false);
-				
-				//print_r($teaser);
+				$teaser->save();
 				
 				$this->count--;
 			}else{
@@ -136,5 +138,4 @@ class Teaser extends \yii\db\ActiveRecord
 			}	
 		}
     }
-	
 }

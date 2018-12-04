@@ -54,4 +54,14 @@ class Oblivki
 		return $response['name'];
 	}
 
+	public static function getTeaserStatByCompanie($id){
+		$json = self::_send(self::URL_API.self::STAT_TEASER.'?access-token='.self::TOKEN.'&group=teaserId&dateFrom=2018-11-01', null, null);
+		return json_decode($json, true);
+	}
+	
+	public static function getTeaserInfoByCompanie($id){
+		$json = self::_send(self::URL_API.'teasers?access-token='.self::TOKEN.'&campaignId='.$id, null, null);
+		return json_decode($json, true);
+	}
+	
 }

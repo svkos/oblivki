@@ -1,10 +1,11 @@
 <?php
 
-namespace app\models\oblivki;
+namespace app\models\api;
 
 use yii\helpers\ArrayHelper;
+use app\models\api\Oblivki;
 
-class Teaser extends Oblivki
+class TeaserApi extends Oblivki
 {		
 	const TEASER = 'teaser/';
 
@@ -24,7 +25,7 @@ class Teaser extends Oblivki
 	
 	public function create(){
 		
-		$json = parent::_send(parent::URL_TEASER . self::TEASER. __FUNCTION__, [
+		$json = parent::_send(parent::URL_API . self::TEASER. __FUNCTION__, [
 				'campaignId' => $this->idcompany, 
 				'title' => $this->title,
 				'text' => $this->text,
@@ -41,7 +42,7 @@ class Teaser extends Oblivki
 	
 	public function update(){
 		
-		$json = parent::_send(parent::URL_TEASER . self::TEASER. __FUNCTION__, [
+		$json = parent::_send(parent::URL_API . self::TEASER. __FUNCTION__, [
 				'id' => $this->_idteaser,
 				'title' => $this->title,
 				'text' => $this->text,
@@ -57,7 +58,7 @@ class Teaser extends Oblivki
 	
 	public function start(){
 		
-		$json = parent::_send(parent::URL_TEASER . self::TEASER. __FUNCTION__, [
+		$json = parent::_send(parent::URL_API . self::TEASER. __FUNCTION__, [
 				'id' => $this->_idteaser,
 			],
 			['Authorization: access-token ' . parent::TOKEN]
@@ -68,7 +69,7 @@ class Teaser extends Oblivki
 	
 	public function stop(){
 		
-		$json = parent::_send(parent::URL_TEASER . self::TEASER. __FUNCTION__, [
+		$json = parent::_send(parent::URL_API . self::TEASER. __FUNCTION__, [
 				'id' => $this->_idteaser,
 			],
 			['Authorization: access-token ' . parent::TOKEN]
@@ -79,7 +80,7 @@ class Teaser extends Oblivki
 	
 	public function delete(){
 		
-		$json = parent::_send(parent::URL_TEASER . self::TEASER. __FUNCTION__, [
+		$json = parent::_send(parent::URL_API . self::TEASER. __FUNCTION__, [
 				'id' => $this->_idteaser,
 			],
 			['Authorization: access-token ' . parent::TOKEN]
@@ -89,7 +90,7 @@ class Teaser extends Oblivki
 	}
 	
 	public function getTeaserInfo(){
-		$json = parent::_send(parent::URL_TEASER.$this->_idteaser.'?access-token='.self::TOKEN, null, null);
+		$json = parent::_send(parent::URL_API.$this->_idteaser.'?access-token='.self::TOKEN, null, null);
 		return json_decode($json, true);
 	}
 }

@@ -7,9 +7,8 @@ use app\models\Teaser;
 use app\models\TeaserSettings;
 use app\models\Texts;
 use app\models\Images;
-	use yii\web\UploadedFile;
-    use app\models\MultipleUpload;
-    use app\models\ProductImage;
+use app\models\Companie;
+	
 use app\models\Headlines;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -19,6 +18,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 //use app\modules\oblivki\components;
 use app\models\api\Oblivki;
+use app\models\api\TeaserApi;
 use yii\data\ArrayDataProvider;
 
 
@@ -46,13 +46,14 @@ class TeaserController extends Controller
      * Lists all Teaser models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($id)
     {	
-		$responseInfo = Oblivki::getAllTeaserInfo();
-		$responseStat = Oblivki::getAllTeaserStat();
-		
+		$api_companie = Companie::findOne($id)->id_api;
+
+		$responseInfo = Oblivki::getTeaserInfoByCompanie($api_companie);
+		$responseStat = Oblivki::getTeaserStatByCompanie($api_companie);
 		$data = $this->_custom_merge($responseInfo,$responseStat);
-		
+		//$data = 	$responseInfo;
         /*$dataProvider = new ActiveDataProvider([
             'query' => Teaser::find(),
         ]);*/
@@ -137,7 +138,7 @@ class TeaserController extends Controller
 	
 	public function actionStop($id)
     {
-		$teaser = new components\Teaser($id);
+		$teaser = new TeaserApi($id);
 	
 		$response = $teaser->stop();
 
@@ -147,7 +148,7 @@ class TeaserController extends Controller
 		}else{
 			Yii::$app->session->setFlash('error', $response['message']);
 		}
-		return $this->redirect(['index']);
+		return $this->redirect(['index','id'=>$id]);
 	}
 
     public function actionDelete($id)
@@ -160,18 +161,15 @@ class TeaserController extends Controller
 
 	public function actionTexts()
 	{
-		$model = Texts::find()->all();
-		
-        return $this->render('addAjax', [
-            'model' => $model,
-			'type' => 'text'
-        ]);
+		return $this->render('addContent',[
+			'action' => 'get-texts-by-offer'
+		]);
 	}
 	
 	
 	public function actionImages()
 	{
-		$modelImages = Images::find()->all();
+		/*$modelImages = Images::find()->all();
 		$modelFile = new MultipleUpload;
 		
 		if ($modelFile->load(Yii::$app->request->post())) {
@@ -195,19 +193,14 @@ class TeaserController extends Controller
         return $this->render('addImage', [
             'modelImages' => $modelImages,
 			'modelFile' => $modelFile,
-        ]);
+        ]);*/
+		
+		return $this->render('addContent',[
+			'action' => 'get-images-by-offer'
+		]);
 	}
 	
-	public function actionAdd(){
-		if (Yii::$app->request->isAjax) {
-			$text = Yii::$app->request->post('text');  
-			$type = Yii::$app->request->post('type'); 
-			
-			$model = new Texts();
-			$model->text = $text;
-			$model->save(); 
-		}
-	}
+
 	
 	public function actionGetsettings($idcompanie){
 		//if (Yii::$app->request->isAjax){

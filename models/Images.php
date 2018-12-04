@@ -8,9 +8,10 @@ use Yii;
  * This is the model class for table "images".
  *
  * @property int $id_image
+ * @property int $id_offer
  * @property string $path
  *
- * @property Teaser $teaser
+ * @property Teaser[] $teasers
  */
 class Images extends \yii\db\ActiveRecord
 {
@@ -28,7 +29,9 @@ class Images extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['path'], 'required'],
+            [['id_offer', 'path'], 'required'],
+			['id_offer', 'unique', 'targetAttribute' => ['id_offer', 'path']],
+            [['id_offer'], 'integer'],
             [['path'], 'string', 'max' => 400],
         ];
     }
@@ -40,6 +43,7 @@ class Images extends \yii\db\ActiveRecord
     {
         return [
             'id_image' => 'Id Image',
+            'id_offer' => 'Id Offer',
             'path' => 'Path',
         ];
     }
@@ -47,8 +51,8 @@ class Images extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTeaser()
+    public function getTeasers()
     {
-        return $this->hasOne(Teaser::className(), ['id_image' => 'id_image']);
+        return $this->hasMany(Teaser::className(), ['id_image' => 'id_image']);
     }
 }
